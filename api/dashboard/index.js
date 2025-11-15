@@ -4,7 +4,9 @@ module.exports = async function (context, req) {
   context.log('Dashboard request received');
   
   try {
+    context.log('Getting Cosmos client...');
     const { shiftsContainer, settingsContainer } = getCosmosClient();
+    context.log('Cosmos client initialized');
     const currentMonth = new Date().toISOString().slice(0, 7);
     
     // Fetch all shifts for current month
@@ -53,9 +55,14 @@ module.exports = async function (context, req) {
     };
   } catch (error) {
     context.log.error('Dashboard error:', error);
+    context.log.error('Error stack:', error.stack);
     context.res = {
       status: 500,
-      body: { error: error.message }
+      body: { 
+        error: error.message,
+        stack: error.stack,
+        details: 'Check function logs for more info'
+      }
     };
   }
 };
