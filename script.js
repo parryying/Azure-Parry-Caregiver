@@ -5,6 +5,7 @@
  */
 
 const CaregiverApp = {
+  showAllMonths: { amy: false, linda: false },
   data: {
     caregivers: {
       amy: {
@@ -116,9 +117,18 @@ const CaregiverApp = {
             this.updateMonthlyStats(id);
             this.updateLastSync();
           } catch (e) {
-            console.error('Failed to update hours:', e);
-            this.showToast('Failed to update hours', 'error');
+            console.error('Failed to update assigned hours:', e);
+            this.showToast('Failed to update assigned hours', 'error');
           }
+        });
+      }
+
+      // Show all months button
+      const showAllBtn = document.getElementById(`${id}-show-all`);
+      if (showAllBtn) {
+        showAllBtn.addEventListener('click', () => {
+          this.showAllMonths[id] = !this.showAllMonths[id];
+          this.renderShifts(id);
         });
       }
     });
@@ -213,8 +223,8 @@ const CaregiverApp = {
    */
   formatDate(isoString) {
     const date = new Date(isoString);
-    return date.toLocaleDateString('en-US', {
-      month: 'short',
+    return date.toLocaleDateString('zh-CN', {
+      month: 'long',
       day: 'numeric',
       timeZone: 'America/Los_Angeles'
     });
@@ -261,17 +271,23 @@ const CaregiverApp = {
     
     if (!shiftsDiv) return;
 
-    const completedShifts = caregiver.shifts
-      .filter(s => !s.isActive && s.month === this.data.currentMonth)
+    let completedShifts = caregiver.shifts
+      .filter(s => !s.isActive)
       .sort((a, b) => new Date(b.clockInTime) - new Date(a.clockInTime));
+
+    // Filter by current month unless showing all
+    if (!this.showAllMonths[caregiverId]) {
+      completedShifts = completedShifts.filter(s => s.month === this.data.currentMonth);
+    }
 
     if (completedShifts.length === 0) {
       shiftsDiv.innerHTML = '<p class="no-shifts">No shifts recorded yet / 暂无记录</p>';
+      document.getElementById(`${caregiverId}-show-all`).style.display = 'none';
       return;
     }
 
-    const recentShifts = completedShifts.slice(0, 3);
-    shiftsDiv.innerHTML = recentShifts.map(shift => {
+    const shiftsToShow = this.showAllMonths[caregiverId] ? completedShifts : completedShifts.slice(0, 3);
+    shiftsDiv.innerHTML = shiftsToShow.map(shift => {
       const payment = Math.round(shift.totalHours * caregiver.hourlyRate);
       return `
       <div class="shift-item" data-shift-id="${shift.id}">
@@ -283,8 +299,8 @@ const CaregiverApp = {
           </div>
         </div>
         <div class="shift-actions">
-          <button class="btn-edit" onclick="CaregiverApp.editShift('${shift.id}', '${caregiverId}')" title="Edit">✏️</button>
-          <button class="btn-delete" onclick="CaregiverApp.deleteShift('${shift.id}', '${caregiverId}')" title="Delete">🗑️</button>
+          <button class="btn-edit" onclick="CaregiverApp.editShift('${shift.id}', '${caregiverId}')" title="编辑">✏️</button>
+          <button class="btn-delete" onclick="CaregiverApp.deleteShift('${shift.id}', '${caregiverId}')" title="删除">🗑️</button>
         </div>
       </div>
       `;
@@ -293,7 +309,14 @@ const CaregiverApp = {
     // Show/hide "Show All" button
     const showAllBtn = document.getElementById(`${caregiverId}-show-all`);
     if (showAllBtn) {
-      showAllBtn.style.display = completedShifts.length > 3 ? 'block' : 'none';
+      const thisMonthCount = caregiver.shifts.filter(s => !s.isActive && s.month === this.data.currentMonth).length;
+      if (this.showAllMonths[caregiverId]) {
+        showAllBtn.textContent = 'Show This Month Only / 仅显示本月';
+        showAllBtn.style.display = 'block';
+      } else {
+        showAllBtn.textContent = 'Show All Months / 显示所有月份';
+        showAllBtn.style.display = thisMonthCount > 3 ? 'block' : 'none';
+      }
     }
   },
 
@@ -328,9 +351,10 @@ const CaregiverApp = {
     if (!confirm('Delete this shift? / 删除此班次？')) return;
 
     try {
-      await ApiClient.deleteShift(shiftId);
-      
       const caregiver = this.data.caregivers[caregiverId];
+      const shift = caregiver.shifts.find(s => s.id === shiftId);
+      await ApiClient.deleteShift(shiftId, shift.month);
+      
       caregiver.shifts = caregiver.shifts.filter(s => s.id !== shiftId);
       
       this.renderShifts(caregiverId);

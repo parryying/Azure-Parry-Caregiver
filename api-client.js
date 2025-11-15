@@ -67,9 +67,11 @@ const ApiClient = {
   /**
    * Delete a shift
    */
-  async deleteShift(shiftId) {
+  async deleteShift(shiftId, month) {
     const response = await fetch(`${API_BASE}/shifts/${shiftId}`, {
-      method: 'DELETE'
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ month })
     });
     
     if (!response.ok) throw new Error('Failed to delete shift');

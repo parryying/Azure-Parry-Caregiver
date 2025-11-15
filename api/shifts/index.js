@@ -73,7 +73,7 @@ module.exports = async function (context, req) {
       };
       
     } else if (method === 'DELETE') {
-      const month = req.query.month;
+      const month = req.body.month;
       await shiftsContainer.item(shiftId, month).delete();
       
       context.res = {
