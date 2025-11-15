@@ -39,10 +39,11 @@ const ApiClient = {
    */
   async clockOut(shiftId) {
     const clockOutTime = new Date().toISOString();
+    const month = clockOutTime.slice(0, 7); // YYYY-MM format
     const response = await fetch(`${API_BASE}/shifts/${shiftId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ clockOutTime })
+      body: JSON.stringify({ clockOutTime, month })
     });
     
     if (!response.ok) throw new Error('Failed to clock out');

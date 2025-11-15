@@ -161,7 +161,7 @@ const CaregiverApp = {
     }
 
     try {
-      const shift = await ApiClient.clockOut(caregiverId);
+      const shift = await ApiClient.clockOut(caregiver.currentShift.id);
       
       // Update local shifts array
       const index = caregiver.shifts.findIndex(s => s.id === shift.id);
