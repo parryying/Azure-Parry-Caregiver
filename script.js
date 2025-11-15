@@ -183,7 +183,8 @@ const CaregiverApp = {
     const diffMs = now - start;
     const hours = Math.floor(diffMs / 3600000);
     const minutes = Math.floor((diffMs % 3600000) / 60000);
-    return { hours, minutes, text: `${hours}h ${minutes}m` };
+    const seconds = Math.floor((diffMs % 60000) / 1000);
+    return { hours, minutes, seconds, text: `${hours}h ${minutes}m ${seconds}s` };
   },
 
   /**

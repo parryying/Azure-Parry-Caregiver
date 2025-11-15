@@ -1,14 +1,14 @@
 /* Design Tokens - Per DESIGN.md Section 5.1 */
 :root {
-  /* Colors */
-  --primary-color: #0078d4;
-  --success-color: #107c10;
-  --danger-color: #d13438;
-  --warning-color: #ffb900;
-  --text-dark: #323130;
-  --text-light: #605e5c;
-  --bg-light: #faf9f8;
-  --border-color: #edebe9;
+  /* Colors - Oatmeal/Cream Theme */
+  --primary-color: #8b7355;
+  --success-color: #6b8e23;
+  --danger-color: #c65d3b;
+  --warning-color: #d4a574;
+  --text-dark: #3d3428;
+  --text-light: #8b7d6b;
+  --bg-light: #f5f1e8;
+  --border-color: #e8dcc8;
   
   /* Typography - Senior-friendly large sizes */
   --font-size-xl: 2rem;      /* Headings */
@@ -38,7 +38,7 @@
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   line-height: 1.6;
-  background: linear-gradient(135deg, #f3f6fb 0%, #eaf2ff 100%);
+  background: linear-gradient(135deg, #f5f1e8 0%, #ede4d3 100%);
   min-height: 100vh;
   padding: var(--space-sm);
   color: var(--text-dark);
@@ -57,7 +57,7 @@ body {
 
 /* Header */
 .app-header {
-  background: linear-gradient(135deg, var(--primary-color) 0%, #005a9e 100%);
+  background: linear-gradient(135deg, var(--primary-color) 0%, #6b5d4f 100%);
   color: white;
   padding: var(--space-lg) var(--space-md);
   text-align: center;
@@ -138,7 +138,7 @@ body {
 
 /* Current Status */
 .current-status {
-  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  background: linear-gradient(135deg, #faf8f3 0%, #f0ebe0 100%);
 }
 
 .status-display {
@@ -249,7 +249,7 @@ body {
 
 /* Recent Shifts */
 .recent-shifts {
-  background: #fffbf0;
+  background: #fdf9f0;
 }
 
 .shifts-list {
@@ -355,7 +355,7 @@ body {
 
 /* Monthly Summary */
 .monthly-summary {
-  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  background: linear-gradient(135deg, #f7f5ed 0%, #ede9dd 100%);
 }
 
 .summary-grid {
@@ -468,14 +468,9 @@ body {
 
 /* Desktop Styles */
 @media (min-width: 1024px) {
-  .main-content {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-lg);
-  }
-  
-  .caregiver-card {
-    margin-bottom: 0;
+  /* Keep vertical layout for better phone viewing */
+  .app-container {
+    max-width: 800px;
   }
 }
 
