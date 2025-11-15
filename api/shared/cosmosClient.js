@@ -5,6 +5,11 @@
 
 const { CosmosClient } = require('@azure/cosmos');
 
+// Polyfill for crypto in Azure Functions environment
+if (typeof global.crypto === 'undefined') {
+  global.crypto = require('crypto').webcrypto;
+}
+
 let client = null;
 let database = null;
 let shiftsContainer = null;
