@@ -15,11 +15,14 @@ let settingsContainer = null;
  */
 function getCosmosClient() {
   if (!client) {
-    const endpoint = process.env.COSMOS_ENDPOINT;
-    const key = process.env.COSMOS_KEY;
+    const endpoint = process.env.COSMOS_ENDPOINT || process.env.COSMOS_DB_ENDPOINT;
+    const key = process.env.COSMOS_KEY || process.env.COSMOS_DB_KEY;
+    
+    console.log('Endpoint:', endpoint ? 'Found' : 'MISSING');
+    console.log('Key:', key ? 'Found' : 'MISSING');
     
     if (!endpoint || !key) {
-      throw new Error('Cosmos DB credentials not configured. Set COSMOS_ENDPOINT and COSMOS_KEY.');
+      throw new Error(`Cosmos DB credentials not configured. ENDPOINT: ${endpoint ? 'set' : 'missing'}, KEY: ${key ? 'set' : 'missing'}`);
     }
     
     client = new CosmosClient({ endpoint, key });
