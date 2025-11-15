@@ -45,7 +45,21 @@ module.exports = async function (context, req) {
     } else if (method === 'PUT') {
       // Clock out or update shift
       const updates = req.body;
-      const { resource: shift } = await shiftsContainer.item(shiftId, updates.month).read();
+      
+      // For updates, month might not be in updates, so try to find the shift
+      let shift;
+      if (updates.month) {
+        const { resource } = await shiftsContainer.item(shiftId, updates.month).read();
+        shift = resource;
+      } else {
+        // Search for shift if month not provided
+        const query = {
+          query: 'SELECT * FROM c WHERE c.id = @shiftId',
+          parameters: [{ name: '@shiftId', value: shiftId }]
+        };
+        const { resources } = await shiftsContainer.items.query(query).fetchAll();
+        shift = resources[0];
+      }
       
       if (!shift) {
         context.res = {
@@ -55,8 +69,19 @@ module.exports = async function (context, req) {
         return;
       }
       
-      // If clocking out, calculate hours
-      if (updates.clockOutTime && !shift.clockOutTime) {
+      // Recalculate hours if times are being updated
+      if (updates.clockInTime || updates.clockOutTime) {
+        const clockIn = new Date(updates.clockInTime || shift.clockInTime);
+        const clockOut = new Date(updates.clockOutTime || shift.clockOutTime);
+        
+        if (clockOut && clockIn) {
+          const diffMs = clockOut - clockIn;
+          updates.totalHours = Math.round((diffMs / 3600000) * 10) / 10;
+          updates.isActive = false;
+        }
+      }
+      // If just clocking out, calculate hours
+      else if (updates.clockOutTime && !shift.clockOutTime) {
         const clockIn = new Date(shift.clockInTime);
         const clockOut = new Date(updates.clockOutTime);
         const diffMs = clockOut - clockIn;

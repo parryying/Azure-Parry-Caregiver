@@ -102,6 +102,68 @@
             </div>
         </main>
         
+        <!-- Monthly Reports Section -->
+        <section class="reports-section">
+          <header class="reports-header">
+            <h2>Monthly Reports / 月度报告</h2>
+            <div class="header-controls">
+              <div class="month-selector">
+                <label>Month / 月份:</label>
+                <input type="month" id="reports-month" />
+              </div>
+              <button class="btn-export" id="export-csv">Export CSV / 导出CSV</button>
+            </div>
+          </header>
+          
+          <div class="reports-grid">
+            <!-- Amy Report Card -->
+            <div class="report-card">
+              <h3>Amy / 小谷</h3>
+              <div class="report-stats">
+                <div class="stat-item">
+                  <span class="stat-label">Total Shifts / 总班次:</span>
+                  <span class="stat-value" id="amy-report-shifts">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Total Hours / 总小时:</span>
+                  <span class="stat-value" id="amy-report-hours">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Total Pay / 总工资:</span>
+                  <span class="stat-value stat-value--pay" id="amy-report-pay">$0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Avg Hours/Shift / 平均时长:</span>
+                  <span class="stat-value" id="amy-report-avg">0h</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Linda Report Card -->
+            <div class="report-card">
+              <h3>Linda / 张洁</h3>
+              <div class="report-stats">
+                <div class="stat-item">
+                  <span class="stat-label">Total Shifts / 总班次:</span>
+                  <span class="stat-value" id="linda-report-shifts">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Total Hours / 总小时:</span>
+                  <span class="stat-value" id="linda-report-hours">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Total Pay / 总工资:</span>
+                  <span class="stat-value stat-value--pay" id="linda-report-pay">$0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Avg Hours/Shift / 平均时长:</span>
+                  <span class="stat-value" id="linda-report-avg">0h</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        
         <footer class="app-footer">
             <p>Last synced: <span id="last-sync">--</span></p>
         </footer>
@@ -109,6 +171,40 @@
     
     <!-- Toast notifications -->
     <div id="toast-container"></div>
+    
+    <!-- Edit Shift Modal -->
+    <div id="edit-modal" class="modal" style="display: none;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Edit Shift / 编辑班次</h2>
+          <button class="modal-close" onclick="CaregiverApp.closeEditModal()">&times;</button>
+        </div>
+        <form id="edit-shift-form" class="modal-body">
+          <input type="hidden" id="edit-shift-id" />
+          <input type="hidden" id="edit-caregiver-id" />
+          
+          <div class="form-group">
+            <label>Clock In Time / 上班时间:</label>
+            <input type="datetime-local" id="edit-clock-in" required />
+          </div>
+          
+          <div class="form-group">
+            <label>Clock Out Time / 下班时间:</label>
+            <input type="datetime-local" id="edit-clock-out" required />
+          </div>
+          
+          <div class="form-group">
+            <label>Total Hours / 总小时数:</label>
+            <input type="number" id="edit-hours" step="0.1" min="0" readonly />
+          </div>
+          
+          <div class="modal-actions">
+            <button type="button" class="btn-cancel" onclick="CaregiverApp.closeEditModal()">Cancel / 取消</button>
+            <button type="submit" class="btn-save">Save / 保存</button>
+          </div>
+        </form>
+      </div>
+    </div>
     
     <script src="api-client.js"></script>
     <script src="script.js"></script>
