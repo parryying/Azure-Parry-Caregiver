@@ -40,7 +40,7 @@ body {
   line-height: 1.6;
   background: linear-gradient(135deg, #f5f1e8 0%, #ede4d3 100%);
   min-height: 100vh;
-  padding: var(--space-sm);
+  padding: 0.5rem;
   color: var(--text-dark);
   font-size: var(--font-size-md);
 }
@@ -76,7 +76,7 @@ body {
 
 /* Main Content */
 .main-content {
-  padding: var(--space-md);
+  padding: 0.5rem;
 }
 
 /* Caregiver Card */
@@ -84,8 +84,8 @@ body {
   background: var(--bg-light);
   border: 3px solid var(--border-color);
   border-radius: 16px;
-  padding: var(--space-lg);
-  margin-bottom: var(--space-lg);
+  padding: var(--space-md);
+  margin-bottom: var(--space-md);
 }
 
 .caregiver-card:last-child {
@@ -118,8 +118,8 @@ body {
 
 /* Sections */
 .caregiver-card section {
-  margin-bottom: var(--space-lg);
-  padding: var(--space-md);
+  margin-bottom: var(--space-md);
+  padding: var(--space-sm);
   background: white;
   border-radius: 12px;
   border: 2px solid var(--border-color);
@@ -271,8 +271,24 @@ body {
   border-radius: 8px;
   padding: var(--space-md);
   display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.shift-main {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.shift-details {
+  display: flex;
+  gap: var(--space-md);
+  align-items: center;
 }
 
 .shift-date {
@@ -282,8 +298,9 @@ body {
 }
 
 .shift-time {
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-sm);
   color: var(--text-light);
+  display: none; /* Hidden for less clutter */
 }
 
 .shift-hours {
@@ -301,21 +318,23 @@ body {
 
 .shift-actions {
   display: flex;
-  gap: var(--space-sm);
-  margin-top: var(--space-sm);
+  gap: var(--space-xs);
+  flex-shrink: 0;
 }
 
 .btn-edit,
 .btn-delete {
-  flex: 1;
-  min-height: 44px;
-  padding: var(--space-xs) var(--space-sm);
-  font-size: var(--font-size-sm);
-  font-weight: 600;
+  min-height: 40px;
+  min-width: 40px;
+  padding: 0.25rem;
+  font-size: 1.2rem;
   border: 2px solid;
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-edit {
