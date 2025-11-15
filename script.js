@@ -1,7 +1,7 @@
 /**
  * Caregiver Time Tracking App
- * Phase 1: Local storage implementation
- * Per DESIGN.md Section 4.2 and 6.1
+ * Phase 2: Cloud backend with Cosmos DB
+ * Per DESIGN.md Section 5.2 and 6.2
  */
 
 const CaregiverApp = {
@@ -36,8 +36,8 @@ const CaregiverApp = {
   /**
    * Initialize the application
    */
-  init() {
-    this.loadFromStorage();
+  async init() {
+    await this.loadFromCloud();
     this.setupEventListeners();
     this.startTimerUpdates();
     this.render();
@@ -45,35 +45,31 @@ const CaregiverApp = {
   },
 
   /**
-   * Load data from localStorage
+   * Load data from cloud API
    */
-  loadFromStorage() {
-    const stored = localStorage.getItem('caregiverData');
-    if (stored) {
-      try {
-        const data = JSON.parse(stored);
-        // Merge stored data with defaults
-        Object.keys(this.data.caregivers).forEach(id => {
-          if (data.caregivers && data.caregivers[id]) {
-            this.data.caregivers[id] = { ...this.data.caregivers[id], ...data.caregivers[id] };
-          }
-        });
-      } catch (e) {
-        console.error('Failed to load data:', e);
-      }
-    }
-  },
-
-  /**
-   * Save data to localStorage
-   */
-  saveToStorage() {
+  async loadFromCloud() {
     try {
-      localStorage.setItem('caregiverData', JSON.stringify(this.data));
+      const dashboard = await ApiClient.getDashboard();
+      
+      // Update caregivers with cloud data
+      ['amy', 'linda'].forEach(id => {
+        const cloudData = dashboard.caregivers[id];
+        if (cloudData) {
+          this.data.caregivers[id] = {
+            ...this.data.caregivers[id],
+            hourlyRate: cloudData.settings.hourlyRate,
+            assignedHours: cloudData.settings.assignedHours,
+            currentShift: cloudData.currentShift,
+            shifts: cloudData.shifts
+          };
+        }
+      });
+      
+      this.data.currentMonth = dashboard.currentMonth;
       this.updateLastSync();
     } catch (e) {
-      console.error('Failed to save data:', e);
-      this.showToast('Failed to save data', 'error');
+      console.error('Failed to load data from cloud:', e);
+      this.showToast('Failed to load data from cloud', 'error');
     }
   },
 
@@ -96,19 +92,33 @@ const CaregiverApp = {
       // Hourly rate changes
       const rateInput = document.getElementById(`${id}-rate`);
       if (rateInput) {
-        rateInput.addEventListener('change', (e) => {
-          this.data.caregivers[id].hourlyRate = parseFloat(e.target.value) || 0;
-          this.saveToStorage();
+        rateInput.addEventListener('change', async (e) => {
+          const newRate = parseFloat(e.target.value) || 0;
+          try {
+            await ApiClient.updateSettings(id, { hourlyRate: newRate });
+            this.data.caregivers[id].hourlyRate = newRate;
+            this.updateLastSync();
+          } catch (e) {
+            console.error('Failed to update rate:', e);
+            this.showToast('Failed to update rate', 'error');
+          }
         });
       }
 
       // Assigned hours changes
       const assignedInput = document.getElementById(`${id}-assigned`);
       if (assignedInput) {
-        assignedInput.addEventListener('change', (e) => {
-          this.data.caregivers[id].assignedHours = parseInt(e.target.value) || 0;
-          this.updateMonthlyStats(id);
-          this.saveToStorage();
+        assignedInput.addEventListener('change', async (e) => {
+          const newHours = parseInt(e.target.value) || 0;
+          try {
+            await ApiClient.updateSettings(id, { assignedHours: newHours });
+            this.data.caregivers[id].assignedHours = newHours;
+            this.updateMonthlyStats(id);
+            this.updateLastSync();
+          } catch (e) {
+            console.error('Failed to update hours:', e);
+            this.showToast('Failed to update hours', 'error');
+          }
         });
       }
     });
@@ -117,7 +127,7 @@ const CaregiverApp = {
   /**
    * Clock in a caregiver
    */
-  clockIn(caregiverId) {
+  async clockIn(caregiverId) {
     const caregiver = this.data.caregivers[caregiverId];
     
     if (caregiver.currentShift) {
@@ -125,29 +135,24 @@ const CaregiverApp = {
       return;
     }
 
-    const now = new Date();
-    const shift = {
-      id: `shift_${Date.now()}`,
-      caregiverId,
-      clockInTime: now.toISOString(),
-      clockOutTime: null,
-      totalHours: 0,
-      isActive: true,
-      month: now.toISOString().slice(0, 7)
-    };
-
-    caregiver.currentShift = shift;
-    caregiver.shifts.push(shift);
-    
-    this.saveToStorage();
-    this.renderStatus(caregiverId);
-    this.showToast(`${caregiver.nameEn} clocked in`, 'success');
+    try {
+      const shift = await ApiClient.clockIn(caregiverId);
+      caregiver.currentShift = shift;
+      caregiver.shifts.push(shift);
+      
+      this.renderStatus(caregiverId);
+      this.updateLastSync();
+      this.showToast(`${caregiver.nameEn} clocked in`, 'success');
+    } catch (e) {
+      console.error('Clock in failed:', e);
+      this.showToast('Failed to clock in', 'error');
+    }
   },
 
   /**
    * Clock out a caregiver
    */
-  clockOut(caregiverId) {
+  async clockOut(caregiverId) {
     const caregiver = this.data.caregivers[caregiverId];
     
     if (!caregiver.currentShift) {
@@ -155,23 +160,26 @@ const CaregiverApp = {
       return;
     }
 
-    const now = new Date();
-    caregiver.currentShift.clockOutTime = now.toISOString();
-    caregiver.currentShift.isActive = false;
-    
-    // Calculate total hours
-    const clockIn = new Date(caregiver.currentShift.clockInTime);
-    const clockOut = new Date(caregiver.currentShift.clockOutTime);
-    const diffMs = clockOut - clockIn;
-    caregiver.currentShift.totalHours = Math.round((diffMs / 3600000) * 100) / 100;
-
-    caregiver.currentShift = null;
-    
-    this.saveToStorage();
-    this.renderStatus(caregiverId);
-    this.renderShifts(caregiverId);
-    this.updateMonthlyStats(caregiverId);
-    this.showToast(`${caregiver.nameEn} clocked out`, 'success');
+    try {
+      const shift = await ApiClient.clockOut(caregiverId);
+      
+      // Update local shifts array
+      const index = caregiver.shifts.findIndex(s => s.id === shift.id);
+      if (index >= 0) {
+        caregiver.shifts[index] = shift;
+      }
+      
+      caregiver.currentShift = null;
+      
+      this.renderStatus(caregiverId);
+      this.renderShifts(caregiverId);
+      this.updateMonthlyStats(caregiverId);
+      this.updateLastSync();
+      this.showToast(`${caregiver.nameEn} clocked out`, 'success');
+    } catch (e) {
+      console.error('Clock out failed:', e);
+      this.showToast('Failed to clock out', 'error');
+    }
   },
 
   /**
@@ -316,16 +324,23 @@ const CaregiverApp = {
   /**
    * Delete a shift
    */
-  deleteShift(shiftId, caregiverId) {
+  async deleteShift(shiftId, caregiverId) {
     if (!confirm('Delete this shift? / 删除此班次？')) return;
 
-    const caregiver = this.data.caregivers[caregiverId];
-    caregiver.shifts = caregiver.shifts.filter(s => s.id !== shiftId);
-    
-    this.saveToStorage();
-    this.renderShifts(caregiverId);
-    this.updateMonthlyStats(caregiverId);
-    this.showToast('Shift deleted', 'success');
+    try {
+      await ApiClient.deleteShift(shiftId);
+      
+      const caregiver = this.data.caregivers[caregiverId];
+      caregiver.shifts = caregiver.shifts.filter(s => s.id !== shiftId);
+      
+      this.renderShifts(caregiverId);
+      this.updateMonthlyStats(caregiverId);
+      this.updateLastSync();
+      this.showToast('Shift deleted', 'success');
+    } catch (e) {
+      console.error('Delete failed:', e);
+      this.showToast('Failed to delete shift', 'error');
+    }
   },
 
   /**
