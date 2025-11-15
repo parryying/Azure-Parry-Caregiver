@@ -263,19 +263,23 @@ const CaregiverApp = {
     }
 
     const recentShifts = completedShifts.slice(0, 3);
-    shiftsDiv.innerHTML = recentShifts.map(shift => `
+    shiftsDiv.innerHTML = recentShifts.map(shift => {
+      const payment = Math.round(shift.totalHours * caregiver.hourlyRate * 100) / 100;
+      return `
       <div class="shift-item" data-shift-id="${shift.id}">
         <div>
           <div class="shift-date">${this.formatDate(shift.clockInTime)}</div>
           <div class="shift-time">${this.formatTime(shift.clockInTime)} - ${this.formatTime(shift.clockOutTime)}</div>
           <div class="shift-hours">${shift.totalHours} hours</div>
+          <div class="shift-payment">$${payment.toFixed(2)}</div>
         </div>
         <div class="shift-actions">
           <button class="btn-edit" onclick="CaregiverApp.editShift('${shift.id}', '${caregiverId}')">Edit / 编辑</button>
           <button class="btn-delete" onclick="CaregiverApp.deleteShift('${shift.id}', '${caregiverId}')">Delete / 删除</button>
         </div>
       </div>
-    `).join('');
+      `;
+    }).join('');
 
     // Show/hide "Show All" button
     const showAllBtn = document.getElementById(`${caregiverId}-show-all`);

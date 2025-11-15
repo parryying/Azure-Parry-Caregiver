@@ -292,6 +292,13 @@ body {
   color: var(--primary-color);
 }
 
+.shift-payment {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--success-color);
+  margin-top: var(--space-xs);
+}
+
 .shift-actions {
   display: flex;
   gap: var(--space-sm);
