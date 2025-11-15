@@ -1,5 +1,5 @@
 const { app } = require('@azure/functions');
-const { getCosmosClient } = require('../shared/cosmosClient');
+const { getCosmosClient } = require('./shared/cosmosClient');
 
 /**
  * POST /api/shifts - Clock in (create new shift)
