@@ -7,6 +7,7 @@ module.exports = async function (context, req) {
     context.log('Getting Cosmos client...');
     const { shiftsContainer, settingsContainer } = getCosmosClient();
     context.log('Cosmos client initialized');
+    context.log('Endpoint:', process.env.COSMOS_ENDPOINT || process.env.COSMOS_DB_ENDPOINT);
     const currentMonth = new Date().toISOString().slice(0, 7);
     
     // Fetch all shifts for current month
