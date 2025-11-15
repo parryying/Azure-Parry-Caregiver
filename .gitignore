@@ -18,3 +18,7 @@ build/
 # Ignore environment files
 .env
 .env.local
+
+# Ignore Azure Functions local settings
+api/local.settings.json
+local.settings.json
