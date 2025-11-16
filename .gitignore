@@ -22,3 +22,4 @@ build/
 # Ignore Azure Functions local settings
 api/local.settings.json
 local.settings.json
+api/local.settings.*.json

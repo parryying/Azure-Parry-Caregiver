@@ -30,7 +30,19 @@ function getCosmosClient() {
       throw new Error(`Cosmos DB credentials not configured. ENDPOINT: ${endpoint ? 'set' : 'missing'}, KEY: ${key ? 'set' : 'missing'}`);
     }
     
-    client = new CosmosClient({ endpoint, key });
+    // Check if using local emulator
+    const isLocalEmulator = endpoint.includes('localhost') || endpoint.includes('127.0.0.1');
+    
+    const clientOptions = { endpoint, key };
+    
+    // Disable SSL verification for local emulator
+    if (isLocalEmulator) {
+      clientOptions.agent = new (require('https').Agent)({
+        rejectUnauthorized: false
+      });
+    }
+    
+    client = new CosmosClient(clientOptions);
     database = client.database('CaregiverDB');
     shiftsContainer = database.container('Shifts');
     settingsContainer = database.container('Settings');
