@@ -1,0 +1,12 @@
+{
+  "configurations": [
+    {
+      "appLocation": ".",
+      "apiLocation": "api",
+      "outputLocation": ".",
+      "appDevserverUrl": "http://localhost:8080",
+      "host": "localhost",
+      "port": 4280
+    }
+  ]
+}

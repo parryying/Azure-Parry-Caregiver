@@ -269,7 +269,7 @@ body {
   background: white;
   border: 2px solid var(--border-color);
   border-radius: 8px;
-  padding: var(--space-md);
+  padding: var(--space-sm);
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -282,19 +282,22 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: var(--space-sm);
+  gap: var(--space-md);
+  min-width: 0;
 }
 
 .shift-details {
   display: flex;
   gap: var(--space-md);
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .shift-date {
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-sm);
   font-weight: 700;
   color: var(--text-dark);
+  white-space: nowrap;
 }
 
 .shift-time {
@@ -304,30 +307,34 @@ body {
 }
 
 .shift-hours {
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-md);
   font-weight: 700;
   color: var(--primary-color);
+  white-space: nowrap;
 }
 
 .shift-payment {
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-md);
   font-weight: 700;
   color: var(--success-color);
-  margin-top: var(--space-xs);
+  white-space: nowrap;
 }
 
 .shift-actions {
   display: flex;
-  gap: var(--space-xs);
+  gap: 0.25rem;
   flex-shrink: 0;
 }
 
 .btn-edit,
 .btn-delete {
-  min-height: 40px;
-  min-width: 40px;
-  padding: 0.25rem;
-  font-size: 1.2rem;
+  min-height: 36px;
+  min-width: 36px;
+  max-width: 36px;
+  height: 36px;
+  width: 36px;
+  padding: 0;
+  font-size: 1rem;
   border: 2px solid;
   border-radius: 6px;
   cursor: pointer;
@@ -335,6 +342,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .btn-edit {
@@ -379,33 +387,75 @@ body {
   color: white;
 }
 
-/* Monthly Summary */
+/* Monthly Summary - Compact Progress Bar */
 .monthly-summary {
   background: linear-gradient(135deg, #f7f5ed 0%, #ede9dd 100%);
 }
 
-.summary-grid {
+.progress-summary {
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
+  gap: 0.5rem;
 }
 
-.summary-item {
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.95rem;
+}
+
+.progress-label {
+  color: var(--text-dark);
+  font-weight: 500;
+}
+
+.hours-input-inline {
+  width: 45px;
+  padding: 0.15rem 0.25rem;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background: white;
+}
+
+.progress-pay {
+  color: var(--success-color);
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.progress-bar-container {
+  position: relative;
+  height: 36px;
   background: white;
   border: 2px solid var(--border-color);
   border-radius: 8px;
-  padding: var(--space-md);
-  font-size: var(--font-size-md);
+  overflow: hidden;
 }
 
-.summary-item label {
-  display: block;
+.progress-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: linear-gradient(90deg, var(--success-color) 0%, #34d399 100%);
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
   font-weight: 600;
-}
-
-.summary-item strong {
-  color: var(--success-color);
-  font-size: var(--font-size-lg);
+  font-size: 0.95rem;
+  color: var(--text-dark);
+  text-shadow: 0 0 4px white, 0 0 8px white;
 }
 
 /* Footer */
@@ -631,8 +681,8 @@ body {
   
   .summary-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-md);
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-sm);
   }
   
   .shift-item {

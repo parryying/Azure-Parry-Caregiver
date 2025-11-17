@@ -23,3 +23,7 @@ build/
 api/local.settings.json
 local.settings.json
 api/local.settings.*.json
+
+# Ignore local development files
+index.local.html
+api-client.local.js

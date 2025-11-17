@@ -29,10 +29,6 @@
                     </div>
                 </section>
                 
-                <section class="hourly-rate">
-                    <label>Hourly Rate / 时薪: $<input type="number" id="amy-rate" value="22.50" step="0.25" min="0" class="rate-input"></label>
-                </section>
-                
                 <section class="recent-shifts">
                     <h3>Recent Shifts / 最近班次</h3>
                     <div class="shifts-list" id="amy-shifts">
@@ -42,16 +38,19 @@
                 </section>
                 
                 <section class="monthly-summary">
-                    <h3>This Month Summary / 本月总结</h3>
-                    <div class="summary-grid">
-                        <div class="summary-item">
-                            <label>Assigned / 分配: <input type="number" id="amy-assigned" value="80" min="0" class="hours-input"> hours</label>
+                    <h3>本月 This Month</h3>
+                    <div class="progress-summary">
+                        <div class="progress-header">
+                            <span class="progress-label">
+                                <input type="number" id="amy-assigned" value="80" min="0" class="hours-input-inline"> hrs 分配
+                            </span>
+                            <span class="progress-pay" id="amy-total">$0</span>
                         </div>
-                        <div class="summary-item">
-                            <span>Worked / 已工作: <strong id="amy-worked">0</strong> hours</span>
-                        </div>
-                        <div class="summary-item">
-                            <span>Remaining / 剩余: <strong id="amy-remaining">80</strong> hours</span>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="amy-progress" style="width: 0%"></div>
+                            <div class="progress-text">
+                                <span id="amy-worked">0</span> / <span id="amy-remaining">80</span> hrs 剩余
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -73,10 +72,6 @@
                     </div>
                 </section>
                 
-                <section class="hourly-rate">
-                    <label>Hourly Rate / 时薪: $<input type="number" id="linda-rate" value="22.50" step="0.25" min="0" class="rate-input"></label>
-                </section>
-                
                 <section class="recent-shifts">
                     <h3>Recent Shifts / 最近班次</h3>
                     <div class="shifts-list" id="linda-shifts">
@@ -86,16 +81,19 @@
                 </section>
                 
                 <section class="monthly-summary">
-                    <h3>This Month Summary / 本月总结</h3>
-                    <div class="summary-grid">
-                        <div class="summary-item">
-                            <label>Assigned / 分配: <input type="number" id="linda-assigned" value="80" min="0" class="hours-input"> hours</label>
+                    <h3>本月 This Month</h3>
+                    <div class="progress-summary">
+                        <div class="progress-header">
+                            <span class="progress-label">
+                                <input type="number" id="linda-assigned" value="80" min="0" class="hours-input-inline"> hrs 分配
+                            </span>
+                            <span class="progress-pay" id="linda-total">$0</span>
                         </div>
-                        <div class="summary-item">
-                            <span>Worked / 已工作: <strong id="linda-worked">0</strong> hours</span>
-                        </div>
-                        <div class="summary-item">
-                            <span>Remaining / 剩余: <strong id="linda-remaining">80</strong> hours</span>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="linda-progress" style="width: 0%"></div>
+                            <div class="progress-text">
+                                <span id="linda-worked">0</span> / <span id="linda-remaining">80</span> hrs 剩余
+                            </div>
                         </div>
                     </div>
                 </section>

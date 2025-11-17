@@ -240,11 +240,11 @@ const CaregiverApp = {
    */
   formatDate(isoString) {
     const date = new Date(isoString);
-    return date.toLocaleDateString('zh-CN', {
-      month: 'long',
-      day: 'numeric',
-      timeZone: 'America/Los_Angeles'
-    });
+    // Convert to LA timezone
+    const laDate = new Date(date.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }));
+    const month = laDate.getMonth() + 1; // getMonth() is 0-indexed
+    const day = laDate.getDate();
+    return `${month}.${day}`;
   },
 
   /**
@@ -349,9 +349,16 @@ const CaregiverApp = {
     
     const worked = Math.round(workedHours * 100) / 100;
     const remaining = Math.round((caregiver.assignedHours - worked) * 100) / 100;
+    const progressPercent = Math.min((worked / caregiver.assignedHours) * 100, 100);
 
     document.getElementById(`${caregiverId}-worked`).textContent = worked;
     document.getElementById(`${caregiverId}-remaining`).textContent = remaining;
+    
+    // Update progress bar
+    const progressBar = document.getElementById(`${caregiverId}-progress`);
+    if (progressBar) {
+      progressBar.style.width = `${progressPercent}%`;
+    }
   },
 
   /**
